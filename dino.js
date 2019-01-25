@@ -2,8 +2,8 @@ var frame=0
 var canvas = document.getElementById("canvas")
 var ctx=canvas.getContext("2d");
 dinoPosition={ x:500, y:280, height:100, width:100}
-cactusPositions=[{x:1300, y:280, height:70, width:100}]
-// array of cactus object literals
+cactusPositions=[{x:1300, y:280, height:100, width:100}]
+var gameOver = false
 
 
 var dino= new Image()
@@ -27,8 +27,8 @@ function hasHit(box1, box2) {
 
 
 function update(){
-  drawEverything()
   updateWorld()
+  drawEverything()
   detection()
 }
 
@@ -38,46 +38,46 @@ function updateWorld (){
   frame+=1
   //adding new cactus
   if(frame%100==0){
-    cactusPositions.push({x:1300, y:280, height:70, width:100})
+    cactusPositions.push({x:1300, y:280, height:100, width:100})
   } 
   // making cactus move to the left
   for (var i=0; i<cactusPositions.length; i++){
     cactusPositions[i].x=cactusPositions[i].x-10
-  }
-  //detecting collision 
-	
+  }	
 }
 
 function detection () {
   for (var i=0; i<cactusPositions.length; i++){
   	if (hasHit(dinoPosition, cactusPositions[i])){
-
-      var wantsToRestart = confirm('GameOver. Do you want to start again?')
-      if(wantsToRestart) {
-          restart()
-      } else {
-          clearInterval(intervalId)
-      }
+      gameOver = true;
     }
+    if(gameOver) {
+      var go = document.querySelector("#gameover")
+      go.style.display = "block"
+      clearInterval(intervalId)
+      go.onclick = function() {
+        go.style.display = "none"
+        restart()
+      }
+    }    
   }
 }
 
 function restart(){
   cactusPositions=[]
+  intervalId = setInterval(update,20)
+  gameOver = false
 }
-
 
 function drawEverything(){
   ctx.clearRect(0,0,1300,800)
   ctx.drawImage(background,0,0,1300,400)
   for (var i=0; i<cactusPositions.length; i++) {
-      ctx.drawImage(cactus,cactusPositions[i].x, cactusPositions[i].y,70,100)  
-
+      ctx.drawImage(cactus,cactusPositions[i].x, cactusPositions[i].y,
+        cactusPositions[i].width, cactusPositions[i].height) 
   } 
   
-  // for statment here
-  ctx.drawImage(cactus,cactusPositions.x,cactusPositions.y,70,100)
-  ctx.drawImage(dino,dinoPosition.x,dinoPosition.y,100,100)
+  ctx.drawImage(dino,dinoPosition.x,dinoPosition.y,dinoPosition.width,dinoPosition.height)
 }
 
 window.onkeydown = function(event) {
